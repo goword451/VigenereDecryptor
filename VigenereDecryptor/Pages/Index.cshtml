@@ -1,0 +1,51 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Шифр Виженера";
+}
+
+<div class="text-center">
+    <form method="post" class="col-lg" enctype="multipart/form-data">
+        <div class="row">
+            @Html.TextArea("Input", Model.Input, new
+            {
+                @rows = 5,
+                @id = "inp",
+                @class = "form-control rounded col-lg",
+                @style = "width: inherit; resize: none;",
+            })
+        </div>
+        <div class="container row mt-4">
+            <div class="input-group mb-2 col-lg-4">
+                <div class="input-group-prepend">
+                    <div class="input-group-text" style="height: 38px;">Ключ</div>
+                </div>
+                <input class="form-control" type="text" name="keyword" value="@Model.Keyword" />
+            </div>
+            <div class="buttons col-lg-4">
+                <p><input type="radio" name="radio" value="encrypt" checked /> Зашифровать</p>
+                <p><input type="radio" name="radio" value="decrypt" /> Расшифровать</p>
+            </div>
+            <div class="form-group сol-lg-4">
+                <input asp-for="InputFile" type="file" class="form-control-file" id="exampleFormControlFile1" />
+                <label for="exampleFormControlFile1" class="font-italic" style="font-size:12px;">Поддерживаемые форматы: .txt, .docx(.doc)</label>
+            </div>
+            <div class="col-lg-4">
+                @if (!string.IsNullOrEmpty(Model.Output))
+                {
+                    <a href="/Files/output.txt" class="mr-4" download="output.txt">
+                        Скачать .txt
+                    </a>
+                    <a href="/Files/output.docx" class="ml-4" download="output.docx">
+                        Скачать .docx
+                    </a>
+                }
+            </div>
+            <input type="submit" value="Провести процедуру" class="btn btn-outline-dark col-lg-4 mt-2" />
+        </div>
+        <p class="row mt-4 font-italic" style="font-size: 14px;">Результат:</p>
+        <div class="row">
+            <div id="out" class="text-justify" style="font-size: 18px;">@Model.Output</div>
+        </div>
+    </form>
+</div>
