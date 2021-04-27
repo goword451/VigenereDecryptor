@@ -4,9 +4,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using VigenereDecryptor.Services;
 using System.IO;
 using System.Text;
-using VigenereDecryptor.Models;
+
 
 namespace VigenereDecryptor.Pages
 {
@@ -14,6 +15,7 @@ namespace VigenereDecryptor.Pages
     {
         private readonly IWebHostEnvironment webHostEnvironment;
         private readonly ILogger<IndexModel> _logger;
+        private readonly ICypher cypher;
 
         [BindProperty]
         public string Input { get; set; }
@@ -22,14 +24,14 @@ namespace VigenereDecryptor.Pages
         [BindProperty]
         public IFormFile InputFile { get; set; }
         [BindProperty]
-        public string SelectedAlph { get; set; }
+        public string Alphabet { get; set; }
 
 
-        public IndexModel(ILogger<IndexModel> logger,
-            IWebHostEnvironment webHostEnvironment)
+        public IndexModel(ILogger<IndexModel> logger, IWebHostEnvironment webHostEnvironment, ICypher cypher)
         {
             _logger = logger;
             this.webHostEnvironment = webHostEnvironment;
+            this.cypher = cypher;
         }
 
         public void OnPostAsync(string input, string keyword, string radio)
@@ -43,9 +45,10 @@ namespace VigenereDecryptor.Pages
                 Input = input;
             }
 
-            var encryptor = new Cypher();
+            
 
             Keyword = keyword;
+            
 
             if (string.IsNullOrEmpty(Input) || string.IsNullOrEmpty(Keyword))
             {
@@ -54,8 +57,7 @@ namespace VigenereDecryptor.Pages
 
             try
             {
-                Output = radio == "encrypt" ?
-                    encryptor.Encrypt(Input, Keyword) : encryptor.Decrypt(Input, Keyword);
+                Output = radio == "encrypt" ? cypher.Encryptor(Input, Keyword) : cypher.Decryptor(Input, Keyword);
             }
             catch
             {
@@ -68,8 +70,7 @@ namespace VigenereDecryptor.Pages
 
         private void GenerateFiles()
         {
-            var uploadFolder = Path.Combine(webHostEnvironment.WebRootPath,
-                    "Files");
+            var uploadFolder = Path.Combine(webHostEnvironment.WebRootPath, "Files");
             var filePathTxt = Path.Combine(uploadFolder, "output.txt");
             var filePathDocx = Path.Combine(uploadFolder, "output.docx");
 
@@ -90,8 +91,7 @@ namespace VigenereDecryptor.Pages
         private void FileParser()
         {
             var extension = InputFile.FileName.Split('.')[1];
-            var uploadFolder = Path.Combine(webHostEnvironment.WebRootPath,
-                    "Files");
+            var uploadFolder = Path.Combine(webHostEnvironment.WebRootPath, "Files");
             var filePath = Path.Combine(uploadFolder, "input." + extension);
 
             using (var fs = new FileStream(filePath, FileMode.Create))
