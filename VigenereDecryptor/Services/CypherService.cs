@@ -15,8 +15,7 @@
                 {
                     int p = alphabet.IndexOf(lowerSym);
                     int k = alphabet.IndexOf(char.ToLower(key[i++ % key.Length]));
-                    result += char.IsUpper(sym) ? alphabet[(p + k) % alphabet.Length].ToString().ToUpper()
-                                                : alphabet[(p + k) % alphabet.Length].ToString();
+                    result += char.IsUpper(sym) ? alphabet[(p + k) % alphabet.Length].ToString().ToUpper() : alphabet[(p + k) % alphabet.Length].ToString();
                 }
                 else
                     result += sym;
@@ -35,8 +34,7 @@
                 {
                     int c = alphabet.IndexOf(lowerSym);
                     int k = alphabet.IndexOf(char.ToLower(key[i++ % key.Length]));
-                    result += char.IsUpper(sym) ? alphabet[(c - k + alphabet.Length) % alphabet.Length].ToString().ToUpper()
-                                                : alphabet[(c - k + alphabet.Length) % alphabet.Length].ToString();
+                    result += char.IsUpper(sym) ? alphabet[(c - k + alphabet.Length) % alphabet.Length].ToString().ToUpper() : alphabet[(c - k + alphabet.Length) % alphabet.Length].ToString();
                 }
                 else
                     result += sym;
