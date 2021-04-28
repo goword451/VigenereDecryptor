@@ -1,4 +1,6 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,30 +10,37 @@ using VigenereDecryptor.Services;
 using System.IO;
 using System.Text;
 
-
 namespace VigenereDecryptor.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly IWebHostEnvironment webHostEnvironment;
-        private readonly ILogger<IndexModel> _logger;
-        private readonly ICypher cypher;
+        public IWebHostEnvironment WebHostEnvironment { get; private set; }
+
+        public ILogger<IndexModel> Logger { get; private set; }
+
+        public ICypherService Cypher { get; private set; }
 
         [BindProperty]
+
         public string Input { get; set; }
+
         public string Keyword { get; set; }
+
         public string Output { get; set; }
+
         [BindProperty]
+
         public IFormFile InputFile { get; set; }
+
         [BindProperty]
+
         public string Alphabet { get; set; }
 
-
-        public IndexModel(ILogger<IndexModel> logger, IWebHostEnvironment webHostEnvironment, ICypher cypher)
+        public IndexModel(ILogger<IndexModel> logger, IWebHostEnvironment webHostEnvironment, ICypherService cypher)
         {
-            _logger = logger;
-            this.webHostEnvironment = webHostEnvironment;
-            this.cypher = cypher;
+            Logger = logger;
+            WebHostEnvironment = webHostEnvironment;
+            Cypher = cypher;
         }
 
         public void OnPostAsync(string input, string keyword, string radio)
@@ -45,11 +54,8 @@ namespace VigenereDecryptor.Pages
                 Input = input;
             }
 
-            
-
             Keyword = keyword;
             
-
             if (string.IsNullOrEmpty(Input) || string.IsNullOrEmpty(Keyword))
             {
                 return;
@@ -57,11 +63,11 @@ namespace VigenereDecryptor.Pages
 
             try
             {
-                Output = radio == "encrypt" ? cypher.Encryptor(Input, Keyword) : cypher.Decryptor(Input, Keyword);
+                Output = radio == "encrypt" ? Cypher.Encrypt(Input, Keyword) : Cypher.Decrypt(Input, Keyword);
             }
             catch
             {
-                _logger.LogError("Используйте русский алфавит");
+                Logger.LogError("Используйте русский алфавит");
                 Output = Input;
             }
 
@@ -70,8 +76,10 @@ namespace VigenereDecryptor.Pages
 
         private void GenerateFiles()
         {
-            var uploadFolder = Path.Combine(webHostEnvironment.WebRootPath, "Files");
+            var uploadFolder = Path.Combine(WebHostEnvironment.WebRootPath, "Files");
+
             var filePathTxt = Path.Combine(uploadFolder, "output.txt");
+
             var filePathDocx = Path.Combine(uploadFolder, "output.docx");
 
             using (var fs = new FileStream(filePathTxt, FileMode.Create))
@@ -80,10 +88,10 @@ namespace VigenereDecryptor.Pages
                 fs.Write(array, 0, array.Length);
             }
 
-            using (var fs = new FileStream(filePathDocx, FileMode.Create))
+            using (var document = WordprocessingDocument.Create(filePathDocx, WordprocessingDocumentType.Document))
             {
-                var array = Encoding.Default.GetBytes(Output);
-                fs.Write(array, 0, array.Length);
+                document.AddMainDocumentPart();
+                document.MainDocumentPart.Document = new Document(new Body(new Paragraph(new Run(new Text(Output)))));
             }
 
         }
@@ -91,7 +99,7 @@ namespace VigenereDecryptor.Pages
         private void FileParser()
         {
             var extension = InputFile.FileName.Split('.')[1];
-            var uploadFolder = Path.Combine(webHostEnvironment.WebRootPath, "Files");
+            var uploadFolder = Path.Combine(WebHostEnvironment.WebRootPath, "Files");
             var filePath = Path.Combine(uploadFolder, "input." + extension);
 
             using (var fs = new FileStream(filePath, FileMode.Create))
@@ -119,7 +127,7 @@ namespace VigenereDecryptor.Pages
                 }
                 catch
                 {
-                    _logger.LogError("Ошибка ввода docx");
+                    Logger.LogError("Ошибка ввода docx");
                 }
             }
         }
