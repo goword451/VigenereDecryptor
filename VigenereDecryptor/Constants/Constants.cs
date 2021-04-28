@@ -25,6 +25,8 @@
             public const string inputFileName = "input.";
 
             public const string txtFormat = "txt";
+
+            public const char specialSymbol = '�';
         }
     }
 }
