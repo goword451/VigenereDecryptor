@@ -20,6 +20,7 @@ namespace VigenereDecryptor.Pages
         [BindProperty]
         public string Input { get; set; }
 
+        [BindProperty]
         public string Key { get; set; }
 
         public string Output { get; set; }
@@ -28,7 +29,7 @@ namespace VigenereDecryptor.Pages
         public IFormFile InputFile { get; set; }
 
         [BindProperty]
-        public string Alphabet { get; set; }
+        public bool EncryptMode { get; set; }
 
         public IndexModel(
             ILogger<IndexModel> logger,
@@ -42,18 +43,12 @@ namespace VigenereDecryptor.Pages
             FileService = fileService;
         }
 
-        public void DecryptOrEncrypt(string input, string key, string action)
+        public void OnPostAsync()
         {
             if (InputFile != null)
             {
                 Input = FileService.ParseFile(InputFile, WebHostEnvironment.WebRootPath);
             }
-            else
-            {
-                Input = input;
-            }
-
-            Key = key;
             
             if (string.IsNullOrEmpty(Input) || string.IsNullOrEmpty(Key))
             {
@@ -62,7 +57,7 @@ namespace VigenereDecryptor.Pages
 
             try
             {
-                Output = action == Constants.Actions.actionEncrypt 
+                Output = EncryptMode 
                     ? Cypher.Encrypt(Input, Key) 
                     : Cypher.Decrypt(Input, Key);
             }

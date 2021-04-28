@@ -2,11 +2,6 @@
 {
     public class Constants
     {
-        public class Actions
-        {
-            public const string actionEncrypt = "encrypt";
-        }
-
         public class Errors
         {
             public const string alphabetError = "Используйте русский алфавит";
