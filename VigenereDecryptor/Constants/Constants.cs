@@ -11,7 +11,7 @@
         {
             public const string alphabetError = "Используйте русский алфавит";
 
-            public const string inputError = "Ошибка ввода docx";
+            public const string inputError = "Ошибка при вводе документа docx";
         }
 
         public class File

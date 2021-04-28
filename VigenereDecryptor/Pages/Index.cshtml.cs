@@ -14,26 +14,23 @@ namespace VigenereDecryptor.Pages
 {
     public class IndexModel : PageModel
     {
-        public IWebHostEnvironment WebHostEnvironment { get; private set; }
+        private IWebHostEnvironment WebHostEnvironment { get; }
 
-        public ILogger<IndexModel> Logger { get; private set; }
+        private ILogger<IndexModel> Logger { get; }
 
-        public ICypherService Cypher { get; private set; }
+        private ICypherService Cypher { get; }
 
         [BindProperty]
-
         public string Input { get; set; }
 
-        public string Keyword { get; set; }
+        public string Key { get; set; }
 
         public string Output { get; set; }
 
         [BindProperty]
-
         public IFormFile InputFile { get; set; }
 
         [BindProperty]
-
         public string Alphabet { get; set; }
 
         public IndexModel(ILogger<IndexModel> logger, IWebHostEnvironment webHostEnvironment, ICypherService cypher)
@@ -43,27 +40,27 @@ namespace VigenereDecryptor.Pages
             Cypher = cypher;
         }
 
-        public void OnPostAsync(string input, string keyword, string radio)
+        public void DecryptOrEncrypt(string input, string key, string action)
         {
             if (InputFile != null)
             {
-                FileParser();
+                ParseFile();
             }
             else
             {
                 Input = input;
             }
 
-            Keyword = keyword;
+            Key = key;
             
-            if (string.IsNullOrEmpty(Input) || string.IsNullOrEmpty(Keyword))
+            if (string.IsNullOrEmpty(Input) || string.IsNullOrEmpty(Key))
             {
                 return;
             }
 
             try
             {
-                Output = radio == Constants.Actions.actionEncrypt ? Cypher.Encrypt(Input, Keyword) : Cypher.Decrypt(Input, Keyword);
+                Output = action == Constants.Actions.actionEncrypt ? Cypher.Encrypt(Input, Key) : Cypher.Decrypt(Input, Key);
             }
             catch
             {
@@ -71,32 +68,10 @@ namespace VigenereDecryptor.Pages
                 Output = Input;
             }
 
-            GenerateFiles();
+            CreateFiles();
         }
 
-        private void GenerateFiles()
-        {
-            var uploadFolder = Path.Combine(WebHostEnvironment.WebRootPath, Constants.File.filesFolder);
-
-            var filePathTxt = Path.Combine(uploadFolder, Constants.File.outputFileTxt);
-
-            var filePathDocx = Path.Combine(uploadFolder, Constants.File.outputFileDoc);
-
-            using (var fs = new FileStream(filePathTxt, FileMode.Create))
-            {
-                var array = Encoding.Default.GetBytes(Output);
-                fs.Write(array, 0, array.Length);
-            }
-
-            using (var document = WordprocessingDocument.Create(filePathDocx, WordprocessingDocumentType.Document))
-            {
-                document.AddMainDocumentPart();
-                document.MainDocumentPart.Document = new Document(new Body(new Paragraph(new Run(new Text(Output)))));
-            }
-
-        }
-
-        private void FileParser()
+        private void ParseFile()
         {
             var extension = InputFile.FileName.Split('.')[1];
             var uploadFolder = Path.Combine(WebHostEnvironment.WebRootPath, Constants.File.filesFolder);
@@ -129,6 +104,27 @@ namespace VigenereDecryptor.Pages
                 {
                     Logger.LogError(Constants.Errors.inputError);
                 }
+            }
+        }
+
+        private void CreateFiles()
+        {
+            var uploadFolder = Path.Combine(WebHostEnvironment.WebRootPath, Constants.File.filesFolder);
+
+            var filePathTxt = Path.Combine(uploadFolder, Constants.File.outputFileTxt);
+
+            var filePathDocx = Path.Combine(uploadFolder, Constants.File.outputFileDoc);
+
+            using (var fs = new FileStream(filePathTxt, FileMode.Create))
+            {
+                var array = Encoding.Default.GetBytes(Output);
+                fs.Write(array, 0, array.Length);
+            }
+
+            using (var document = WordprocessingDocument.Create(filePathDocx, WordprocessingDocumentType.Document))
+            {
+                document.AddMainDocumentPart();
+                document.MainDocumentPart.Document = new Document(new Body(new Paragraph(new Run(new Text(Output)))));
             }
         }
     }

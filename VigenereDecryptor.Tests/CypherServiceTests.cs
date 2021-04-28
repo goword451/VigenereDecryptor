@@ -9,8 +9,7 @@ namespace VigenereDecryptor.Tests
         private ICypherService CypherService { get; set; }
 
         [SetUp]
-
-        public void SetUp()
+        protected void SetUp()
         {
             CypherService = new CypherService();
         }

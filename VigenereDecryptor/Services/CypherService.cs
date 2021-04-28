@@ -8,17 +8,17 @@
         {
             int i = 0;
             string result = "";
-            foreach (char sym in text)
+            foreach (char symbol in text)
             {
-                char lowerSym = char.ToLower(sym);
-                if (alphabet.Contains(lowerSym))
+                char lowerSymbol = char.ToLower(symbol);
+                if (alphabet.Contains(lowerSymbol))
                 {
-                    int p = alphabet.IndexOf(lowerSym);
+                    int j = alphabet.IndexOf(lowerSymbol);
                     int k = alphabet.IndexOf(char.ToLower(key[i++ % key.Length]));
-                    result += char.IsUpper(sym) ? alphabet[(p + k) % alphabet.Length].ToString().ToUpper() : alphabet[(p + k) % alphabet.Length].ToString();
+                    result += char.IsUpper(symbol) ? alphabet[(j + k) % alphabet.Length].ToString().ToUpper() : alphabet[(j + k) % alphabet.Length].ToString();
                 }
                 else
-                    result += sym;
+                    result += symbol;
             }
             return result;
         }
@@ -27,17 +27,17 @@
         {
             int i = 0;
             string result = "";
-            foreach (char sym in text)
+            foreach (char symbol in text)
             {
-                char lowerSym = char.ToLower(sym);
-                if (alphabet.Contains(lowerSym))
+                char lowerSymbol = char.ToLower(symbol);
+                if (alphabet.Contains(lowerSymbol))
                 {
-                    int c = alphabet.IndexOf(lowerSym);
-                    int k = alphabet.IndexOf(char.ToLower(key[i++ % key.Length]));
-                    result += char.IsUpper(sym) ? alphabet[(c - k + alphabet.Length) % alphabet.Length].ToString().ToUpper() : alphabet[(c - k + alphabet.Length) % alphabet.Length].ToString();
+                    int m = alphabet.IndexOf(lowerSymbol);
+                    int n = alphabet.IndexOf(char.ToLower(key[i++ % key.Length]));
+                    result += char.IsUpper(symbol) ? alphabet[(m - n + alphabet.Length) % alphabet.Length].ToString().ToUpper() : alphabet[(m - n + alphabet.Length) % alphabet.Length].ToString();
                 }
                 else
-                    result += sym;
+                    result += symbol;
             }
             return result;
         }

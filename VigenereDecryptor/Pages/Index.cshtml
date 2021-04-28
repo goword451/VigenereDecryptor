@@ -20,7 +20,7 @@
                 <div class="input-group-prepend">
                     <div class="input-group-text" style="height: 38px;">Ключ</div>
                 </div>
-                <input class="form-control" type="text" name="keyword" value="@Model.Keyword" />
+                <input class="form-control" type="text" name="keyword" value="@Model.Key" />
             </div>
             <div class="buttons col-lg-4">
                 <p><input type="radio" name="radio" value="encrypt"/> Зашифровать</p>
@@ -34,10 +34,10 @@
                 @if (!string.IsNullOrEmpty(Model.Output))
                 {
                     <a href="/Files/output.txt" class="mr-4" download="output.txt">
-                        Скачать .txt
+                        Загрузить .txt
                     </a>
                     <a href="/Files/output.docx" class="ml-4" download="output.docx">
-                        Скачать .docx
+                        Загрузить .docx
                     </a>
                 }
             </div>
