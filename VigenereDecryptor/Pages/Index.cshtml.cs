@@ -14,6 +14,22 @@ namespace VigenereDecryptor.Pages
 {
     public class IndexModel : PageModel
     {
+        private const string actionEncrypt = "encrypt";
+
+        private const string alphabetError = "Используйте русский алфавит";
+
+        private const string inputError = "Ошибка ввода docx";
+
+        private const string filesFolder = "Files";
+
+        private const string outputFileDoc = "output.docx";
+
+        private const string outputFileTxt = "output.txt";
+
+        private const string inputFileName = "input.";
+
+        private const string txtFormat = "txt";
+
         public IWebHostEnvironment WebHostEnvironment { get; private set; }
 
         public ILogger<IndexModel> Logger { get; private set; }
@@ -63,11 +79,11 @@ namespace VigenereDecryptor.Pages
 
             try
             {
-                Output = radio == "encrypt" ? Cypher.Encrypt(Input, Keyword) : Cypher.Decrypt(Input, Keyword);
+                Output = radio == actionEncrypt ? Cypher.Encrypt(Input, Keyword) : Cypher.Decrypt(Input, Keyword);
             }
             catch
             {
-                Logger.LogError("Используйте русский алфавит");
+                Logger.LogError(alphabetError);
                 Output = Input;
             }
 
@@ -76,11 +92,11 @@ namespace VigenereDecryptor.Pages
 
         private void GenerateFiles()
         {
-            var uploadFolder = Path.Combine(WebHostEnvironment.WebRootPath, "Files");
+            var uploadFolder = Path.Combine(WebHostEnvironment.WebRootPath, filesFolder);
 
-            var filePathTxt = Path.Combine(uploadFolder, "output.txt");
+            var filePathTxt = Path.Combine(uploadFolder, outputFileTxt);
 
-            var filePathDocx = Path.Combine(uploadFolder, "output.docx");
+            var filePathDocx = Path.Combine(uploadFolder, outputFileDoc);
 
             using (var fs = new FileStream(filePathTxt, FileMode.Create))
             {
@@ -99,8 +115,8 @@ namespace VigenereDecryptor.Pages
         private void FileParser()
         {
             var extension = InputFile.FileName.Split('.')[1];
-            var uploadFolder = Path.Combine(WebHostEnvironment.WebRootPath, "Files");
-            var filePath = Path.Combine(uploadFolder, "input." + extension);
+            var uploadFolder = Path.Combine(WebHostEnvironment.WebRootPath, filesFolder);
+            var filePath = Path.Combine(uploadFolder, inputFileName + extension);
 
             using (var fs = new FileStream(filePath, FileMode.Create))
             {
@@ -108,7 +124,7 @@ namespace VigenereDecryptor.Pages
             }
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-            if (extension == "txt")
+            if (extension == txtFormat)
             {
                 Input = System.IO.File.ReadAllText(filePath);
                 if (Input.Contains('�'))
@@ -127,7 +143,7 @@ namespace VigenereDecryptor.Pages
                 }
                 catch
                 {
-                    Logger.LogError("Ошибка ввода docx");
+                    Logger.LogError(inputError);
                 }
             }
         }
