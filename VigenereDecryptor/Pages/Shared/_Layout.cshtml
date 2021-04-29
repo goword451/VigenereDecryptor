@@ -4,12 +4,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+  <script src="~/lib/jquery/dist/jquery.min.js"></script>
+  <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="~/js/site.js" asp-append-version="true"></script>
   <link rel="stylesheet" href="~/css/site.css" />
+  <title>Шифр Виженера</title>
 </head>
 <body>
   <header>
-    <div class="container">
-      Шифр Виженера
+    <div class="container mt-md-2 mb-md-4">
+      <h1>Шифр Виженера</h1>
     </div>
   </header>
   <div class="container">
@@ -23,10 +27,6 @@
       &copy; 2021 - Антон Павлов
     </div>
   </footer>
-
-  <script src="~/lib/jquery/dist/jquery.min.js"></script>
-  <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="~/js/site.js" asp-append-version="true"></script>
 
   @await RenderSectionAsync("Scripts", required: false)
 </body>

@@ -21,15 +21,16 @@ namespace VigenereDecryptor.Pages
         public string Input { get; set; }
 
         [BindProperty]
-        public string Key { get; set; }
-
         public string Output { get; set; }
+
+        [BindProperty]
+        public string Key { get; set; }
 
         [BindProperty]
         public IFormFile InputFile { get; set; }
 
         [BindProperty]
-        public bool EncryptMode { get; set; }
+        public bool EncryptMode { get; set; } = true;
 
         public IndexModel(
             ILogger<IndexModel> logger,
@@ -49,7 +50,7 @@ namespace VigenereDecryptor.Pages
             {
                 Input = FileService.ParseFile(InputFile, WebHostEnvironment.WebRootPath);
             }
-            
+
             if (string.IsNullOrEmpty(Input) || string.IsNullOrEmpty(Key))
             {
                 return;
@@ -64,7 +65,6 @@ namespace VigenereDecryptor.Pages
             catch
             {
                 Logger.LogError(Constants.Errors.alphabetError);
-                Output = Input;
             }
 
             FileService.CreateFiles(Output, WebHostEnvironment.WebRootPath);

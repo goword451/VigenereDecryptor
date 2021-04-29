@@ -1,52 +1,90 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Шифр Виженера";
+  ModelState.Remove(nameof(Model.Input));
+  bool isOutputEmpty = string.IsNullOrWhiteSpace(Model.Output);
 }
 
 <div class="text-center">
-    <form method="post" class="col-lg" enctype="multipart/form-data">
+  <form method="post" enctype="multipart/form-data">
+    <div class="row col-md">
+      @Html.TextAreaFor(x => x.Input, new
+      {
+          @rows = 8,
+          @id = "textarea",
+          @class = "form-control rounded col-md",
+          @style = "width: inherit; resize: none;"
+      })
+      @Html.HiddenFor(x => x.Input, new { @id = "hdnInput" })
+    </div>
+
+    @if (!isOutputEmpty)
+    {
+      <div id="output" class="row col-md mt-md-4" style="display: none;">
+        <div class="alert alert-primary col-md text-justify" role="alert">
+          @Model.Output
+        </div>
+      </div>
+    }
+
+    <div class="container row mt-md-4">
+      <div class="col-md-6">
         <div class="row">
-            @Html.TextArea("Input", Model.Input, new
-            {
-                @rows = 5,
-                @id = "inp",
-                @class = "form-control rounded col-lg",
-                @style = "width: inherit; resize: none;",
-                @required = true
-            })
+          <div class="input-group col-md pl-0 ml-0">
+            <div class="input-group-prepend">
+              <div class="input-group-text">Ключ</div>
+            </div>
+            @Html.TextBoxFor(x => x.Key, new { @id = "key", @class = "form-control", @required = true, @maxlength = "50" })
+          </div>
         </div>
-        <div class="container row mt-4">
-            <div class="input-group mb-2 col-lg-4">
-                <div class="input-group-prepend">
-                    <div class="input-group-text" style="height: 38px;">Ключ</div>
-                </div>
-                @Html.TextBoxFor(x => x.Key, new { @id = "key", @class = "form-control", @required = true, @maxlength = "50" } )
-            </div>
-            <div class="buttons col-lg-4">
-                <p>@Html.RadioButtonFor(x => x.EncryptMode, true) Зашифровать</p>
-                <p>@Html.RadioButtonFor(x => x.EncryptMode, false) Расшифровать</p>
-            </div>
-            <div class="form-group сol-lg-4">
-                <input asp-for="InputFile" type="file" class="form-control-file" id="exampleFormControlFile1" />
-                <label for="exampleFormControlFile1" class="font-italic" style="font-size:12px;">Поддерживаемые форматы: .txt, .docx(.doc)</label>
-            </div>
-            <div class="col-lg-4">
-                @if (!string.IsNullOrEmpty(Model.Output))
-                {
-                    <a href="/Files/output.txt" class="mr-4" download="output.txt">
-                        Загрузить .txt
-                    </a>
-                    <a href="/Files/output.docx" class="ml-4" download="output.docx">
-                        Загрузить .docx
-                    </a>
-                }
-            </div>
-            <input type="submit" value="Провести процедуру" class="btn btn-outline-dark col-lg-4 mt-2" id="submit" />
+
+        <div class="row mt-md-4">
+          <div class="btn-group btn-group-toggle col-md pl-0 ml-0" data-toggle="buttons">
+            <label id="lblEncrypt" class="btn btn-outline-dark @(Model.EncryptMode ? "active" : string.Empty)">
+              @Html.RadioButtonFor(x => x.EncryptMode, true, new { @id = "mode-encrypt", @name = "mode", @autocomplete = "off" }) Зашифровать
+            </label>
+            <label id="lblDecrypt" class="btn btn-outline-dark @(!Model.EncryptMode ? "active" : string.Empty)">
+              @Html.RadioButtonFor(x => x.EncryptMode, false, new { @id = "mode-decrypt", @name = "mode", @autocomplete = "off" }) Расшифровать
+            </label>
+          </div>
         </div>
-        <p class="row mt-4 font-italic" style="font-size: 14px;">Результат:</p>
+
+        <div class="row mt-md-4">
+          <div class="col-md pl-0 ml-0">
+            <input type="submit" value="Провести вычисления" class="btn btn-outline-dark col-md" id="submit" />
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
         <div class="row">
-            <div id="out" class="text-justify" style="font-size: 18px;">@Model.Output</div>
+          <div class="form-group col-md pr-0 mr-0 pb-md-4" style="text-align-last: center;">
+            <input asp-for="InputFile" type="file" class="form-control-file" id="inputFile" />
+            <label for="inputFile" class="font-italic text-left" style="font-size: 12px;">Поддерживаемые форматы: .txt, .docx(.doc)</label>
+          </div>
         </div>
-    </form>
+
+        <div class="row mt-md-4">
+          <div class="btn-group col-md pr-0 mr-0">
+            <button type="button" id="download" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" @(isOutputEmpty ? "disabled" : string.Empty)>
+              Скачать файл
+            </button>
+            <div class="dropdown-menu col-md">
+              <a href="/Files/output.txt" class="dropdown-item col-md" download="output.txt">Скачать документ с расширением <b>txt</b></a>
+              <div role="separator" class="dropdown-divider"></div>
+              <a href="/Files/output.docx" class="dropdown-item col-md" download="output.docx">Скачать документ с расширением <b>docx</b></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
 </div>
+
+<script>
+  $(document).ready(function () {
+    $('#output').animate({
+      height: 'show'
+    });
+  });
+</script>
