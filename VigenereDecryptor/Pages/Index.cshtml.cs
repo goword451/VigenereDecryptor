@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System;
+
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+
 using VigenereDecryptor.Services;
 
 namespace VigenereDecryptor.Pages
@@ -22,6 +25,9 @@ namespace VigenereDecryptor.Pages
 
         [BindProperty]
         public string Output { get; set; }
+
+        [BindProperty]
+        public string ErrorMessage { get; set; }
 
         [BindProperty]
         public string Key { get; set; }
@@ -46,9 +52,18 @@ namespace VigenereDecryptor.Pages
 
         public void OnPostAsync()
         {
+            Output = string.Empty;
+
             if (InputFile != null)
             {
-                Input = FileService.ParseFile(InputFile, WebHostEnvironment.WebRootPath);
+                var isParsed = FileService.ParseFile(InputFile, WebHostEnvironment.WebRootPath, out string parsingResult);
+                if (!isParsed)
+                {
+                    ErrorMessage = Constants.Errors.ParsingError;
+                    return;
+                }
+
+                Input = parsingResult;
             }
 
             if (string.IsNullOrEmpty(Input) || string.IsNullOrEmpty(Key))
@@ -58,16 +73,22 @@ namespace VigenereDecryptor.Pages
 
             try
             {
-                Output = EncryptMode 
-                    ? Cypher.Encrypt(Input, Key) 
+                Output = EncryptMode
+                    ? Cypher.Encrypt(Input, Key)
                     : Cypher.Decrypt(Input, Key);
             }
-            catch
+            catch (Exception ex)
             {
-                Logger.LogError(Constants.Errors.alphabetError);
+                ErrorMessage = Constants.Errors.ProcessingError;
+                Logger.LogError(ex.Message);
             }
 
-            FileService.CreateFiles(Output, WebHostEnvironment.WebRootPath);
+            var isCreated = FileService.CreateFiles(Output, WebHostEnvironment.WebRootPath);
+            if (!isCreated)
+            {
+                ErrorMessage = Constants.Errors.FilesCreationError;
+                return;
+            }
         }
     }
 }

@@ -4,26 +4,28 @@
     {
         public class Errors
         {
-            public const string alphabetError = "Используйте русский алфавит";
+            public const string ParsingError = "Не удалось прочитать файл";
 
-            public const string inputError = "Ошибка при вводе документа docx";
+            public const string FilesCreationError = "Внутренняя ошибка. Не удалось создать файлы для загрузки";
+
+            public const string ProcessingError = "Не удалось произвести вычисления";
         }
 
         public class File
         {
-            public const string filesFolder = "Files";
+            public const string FilesFolder = "Files";
 
-            public const string outputFileDoc = "output.docx";
+            public const string OutputFileDoc = "output.docx";
 
-            public const string outputFileTxt = "output.txt";
+            public const string OutputFileTxt = "output.txt";
 
-            public const string inputFileName = "input.";
+            public const string InputFileName = "input.";
 
-            public const string txtFormat = "txt";
+            public const string TxtFormat = "txt";
 
-            public const char specialSymbol = '�';
+            public const char SpecialSymbol = '�';
         }
     }
 }
-    
+
 

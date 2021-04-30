@@ -1,11 +1,13 @@
-﻿using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Wordprocessing;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
+﻿using System;
 using System.IO;
 using System.Text;
-using System;
+
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace VigenereDecryptor.Services
 {
@@ -18,11 +20,12 @@ namespace VigenereDecryptor.Services
             Logger = logger;
         }
 
-        public string ParseFile(IFormFile inputFile, string webRootPath)
+        public bool ParseFile(IFormFile inputFile, string webRootPath, out string result)
         {
+            result = string.Empty;
             var extension = inputFile.FileName.Split('.')[1];
-            var uploadFolder = Path.Combine(webRootPath, Constants.File.filesFolder);
-            var filePath = Path.Combine(uploadFolder, Constants.File.inputFileName + extension);
+            var uploadFolder = Path.Combine(webRootPath, Constants.File.FilesFolder);
+            var filePath = Path.Combine(uploadFolder, Constants.File.InputFileName + extension);
 
             using (var fs = new FileStream(filePath, FileMode.Create))
             {
@@ -30,41 +33,41 @@ namespace VigenereDecryptor.Services
             }
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-            if (extension == Constants.File.txtFormat)
+            try
             {
-                var input = File.ReadAllText(filePath);
-                if (input.Contains(Constants.File.specialSymbol))
+                if (extension == Constants.File.TxtFormat)
                 {
-                    return File.ReadAllText(filePath, Encoding.GetEncoding(1251));
+                    result = File.ReadAllText(filePath);
+                    if (result.Contains(Constants.File.SpecialSymbol))
+                    {
+                        result = File.ReadAllText(filePath, Encoding.GetEncoding(1251));
+                    }
                 }
-
-                return input;
-            }
-            else
-            {
-                try
+                else
                 {
                     using (var document = WordprocessingDocument.Open(filePath, false))
                     {
-                        return document.MainDocumentPart.Document.Body.InnerText;
+                        result = document.MainDocumentPart.Document.Body.InnerText;
                     }
-                }
-                catch
-                {
-                    Logger.LogError(Constants.Errors.inputError);
-                }
-            }
 
-            return string.Empty;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.Message);
+                return false;
+            }
         }
 
         public bool CreateFiles(string text, string webRootPath)
         {
-            var uploadFolder = Path.Combine(webRootPath, Constants.File.filesFolder);
+            var uploadFolder = Path.Combine(webRootPath, Constants.File.FilesFolder);
 
-            var filePathTxt = Path.Combine(uploadFolder, Constants.File.outputFileTxt);
+            var filePathTxt = Path.Combine(uploadFolder, Constants.File.OutputFileTxt);
 
-            var filePathDocx = Path.Combine(uploadFolder, Constants.File.outputFileDoc);
+            var filePathDocx = Path.Combine(uploadFolder, Constants.File.OutputFileDoc);
 
             try
             {
@@ -82,7 +85,7 @@ namespace VigenereDecryptor.Services
 
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.LogError(ex.Message);
 

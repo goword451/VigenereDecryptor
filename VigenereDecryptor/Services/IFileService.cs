@@ -6,6 +6,6 @@ namespace VigenereDecryptor.Services
     {
         bool CreateFiles(string text, string webRootPath);
 
-        string ParseFile(IFormFile inputFile, string webRootPath);
+        bool ParseFile(IFormFile inputFile, string webRootPath, out string result);
     }
 }

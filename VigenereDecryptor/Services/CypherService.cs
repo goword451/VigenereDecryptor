@@ -18,7 +18,9 @@
                     result += char.IsUpper(symbol) ? alphabet[(j + k) % alphabet.Length].ToString().ToUpper() : alphabet[(j + k) % alphabet.Length].ToString();
                 }
                 else
+                {
                     result += symbol;
+                }
             }
             return result;
         }
@@ -37,7 +39,9 @@
                     result += char.IsUpper(symbol) ? alphabet[(m - n + alphabet.Length) % alphabet.Length].ToString().ToUpper() : alphabet[(m - n + alphabet.Length) % alphabet.Length].ToString();
                 }
                 else
+                {
                     result += symbol;
+                }
             }
             return result;
         }
